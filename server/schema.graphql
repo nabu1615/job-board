@@ -4,13 +4,18 @@ type Query {
     jobs: [Job!]
 }
 
+type Mutation {
+    createJob(input: createJobInput): Job
+    deleteJob(id: ID!): Job
+    updateJob(input: updateJobInput!): Job
+}
+
 type Company {
     id: ID!
     name: String!
     description: String
     jobs: [Job!]!
 }
-
 
 """
 Represents a job add posted on our board
@@ -22,4 +27,15 @@ type Job {
     title: String!
     description: String
     company: Company!
+}
+
+input createJobInput {
+    title: String!
+    description: String
+}
+
+input updateJobInput {
+    id: ID!
+    title: String! 
+    description: String
 }
