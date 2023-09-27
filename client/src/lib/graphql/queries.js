@@ -1,11 +1,24 @@
 import { GraphQLClient, gql } from 'graphql-request';
+import { getAccessToken } from '../auth';
 
 
-const client = new GraphQLClient('http://localhost:9000/graphql');
+const client = new GraphQLClient('http://localhost:9000/graphql', {
+  headers: () => {
+    const token = getAccessToken();
+
+    if (!token) {
+      return {};
+    }
+
+    return {
+      authorization: token ? `Bearer ${token}` : null,
+    };
+  }
+});
 
 
 export async function deleteJob(id) {
-    const mutation = gql`
+  const mutation = gql`
     mutation DeleteJob($id: ID!) {
         deleteJob(id: $id) {
             id,
@@ -13,16 +26,16 @@ export async function deleteJob(id) {
         }
     }`;
 
-    const { job } = await client.request(mutation, {
-        id
-    })
+  const { job } = await client.request(mutation, {
+    id
+  })
 
-    return job;
+  return job;
 
 }
 
 export async function createJob({ title, description }) {
-    const mutation = gql`
+  const mutation = gql`
     mutation CreateJob($input: createJobInput!) {
         job: createJob(input: $input) {
             title
@@ -31,18 +44,18 @@ export async function createJob({ title, description }) {
         }
     }`;
 
-    const { job } = await client.request(mutation, {
-        input: {
-            title,
-            description
-        }
-    })
+  const { job } = await client.request(mutation, {
+    input: {
+      title,
+      description
+    }
+  })
 
-    return job;
+  return job;
 }
 
 export async function getJobs() {
-    const query = gql`
+  const query = gql`
     query {
         jobs {
           title
@@ -55,13 +68,13 @@ export async function getJobs() {
         }
       }`;
 
-    const { jobs } = await client.request(query)
+  const { jobs } = await client.request(query)
 
-    return jobs;
+  return jobs;
 }
 
 export async function getJob(id) {
-    const query = gql`
+  const query = gql`
     query JobById {
         job(id: "${id}") {
           title
@@ -75,13 +88,13 @@ export async function getJob(id) {
         }
       }`;
 
-    const { job } = await client.request(query, { id })
+  const { job } = await client.request(query, { id })
 
-    return job;
+  return job;
 }
 
 export async function getCompany(id) {
-    const query = gql`
+  const query = gql`
     query CompanyById {
         company(id: "${id}") {
           id
@@ -97,7 +110,7 @@ export async function getCompany(id) {
         }
       }`;
 
-    const { company } = await client.request(query, { id })
+  const { company } = await client.request(query, { id })
 
-    return company;
+  return company;
 }
